@@ -7,8 +7,13 @@ const { PRIVATE_KEY, RPC_URL } = process.env;
 if (!PRIVATE_KEY || !RPC_URL) {
   throw new Error("PRIVATE_KEY and RPC_URL env var required");
 }
-
-const upload = multer({ dest: "../tmp" });
+var storage = multer.diskStorage({
+  destination: "uploads/",
+  filename: function (_req, file, callback) {
+    callback(null, Date.now().toString() + file.originalname);
+  },
+});
+var upload = multer({ storage: storage });
 
 async function getIrys() {
   const irys = new Irys({
@@ -45,6 +50,8 @@ export function createServer() {
     if (req.file.size > FILE_SIZE_LIMIT) {
       return res.status(400).json({ error: "File must be 5mb or less" });
     }
+
+    console.log();
 
     res.json({ message: "file receieved" }).status(200);
   });
