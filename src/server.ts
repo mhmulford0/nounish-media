@@ -25,26 +25,22 @@ export function createServer() {
 
             console.log(`${req.file.destination}${req.file.filename}`);
 
-            const uploader = arweave.uploader.chunkedUploader; // recreate for each transaction
-            const dataStream = createReadStream(`${req.file.destination}${req.file.filename}`);
-            const response = await uploader.uploadData(dataStream);
-            console.log(`Read Stream uploaded ==> https://gateway.irys.xyz/${response.data.id}`);
+            try {
+                const uploader = arweave.uploader.chunkedUploader;
+                const dataStream = createReadStream(`${req.file.destination}${req.file.filename}`);
+                const response = await uploader.uploadData(dataStream);
+                console.log(
+                    `Read Stream uploaded ==> https://gateway.irys.xyz/${response.data.id}`
+                );
 
-            return res.json({
-                message: "file uploaded",
-                fileURI: `https://gateway.irys.xyz/${response.data.id}`,
-            });
-
-            // try {
-            //     const resp = await arweave.uploadFile(
-            //         `${req.file.destination}${req.file.filename}`
-            //     );
-
-            //     res.json({ message: `File uploaded ==> https://gateway.irys.xyz/${resp.id}` });
-            // } catch (e: unknown) {
-            //     console.log(e);
-            //     res.json({ error: "something failed" });
-            // }
+                return res.json({
+                    message: "file uploaded",
+                    fileURI: `https://gateway.irys.xyz/${response.data.id}`,
+                });
+            } catch (e) {
+                console.log(e);
+                return res.json({ error: "generic error" });
+            }
         });
     });
 
