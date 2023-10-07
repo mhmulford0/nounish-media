@@ -36,7 +36,7 @@ if (!PRIVATE_KEY || !RPC_URL) {
     throw new Error("PRIVATE_KEY and RPC_URL env var required");
 }
 
-export async function getIrys() {
+async function getIrys() {
     const irys = new Irys({
         url: "https://devnet.irys.xyz",
         token: "ethereum",
@@ -45,3 +45,5 @@ export async function getIrys() {
     });
     return irys;
 }
+
+export const arweave = await getIrys();

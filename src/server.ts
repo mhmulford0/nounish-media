@@ -1,6 +1,6 @@
 import express from "express";
 
-import { uploadPropMedia } from "./core.js";
+import { arweave, uploadPropMedia } from "./core.js";
 
 export function createServer() {
     const app = express();
@@ -13,7 +13,7 @@ export function createServer() {
     app.post("/upload", (req, res) => {
         // TODO: check prop admin
 
-        uploadPropMedia(req, res, (err) => {
+        uploadPropMedia(req, res, async (err) => {
             if (!req.file) {
                 return res.json({ error: "No file detected" });
             }
@@ -23,8 +23,20 @@ export function createServer() {
             }
 
             console.log(`${req.file.destination}${req.file.filename}`);
+            console.log(arweave.utils.toAtomic(1) * 0.2);
 
-            res.json({ message: "file uploaded" });
+            return res.json({ message: "ship it" });
+
+            // try {
+            //     const resp = await arweave.uploadFile(
+            //         `${req.file.destination}${req.file.filename}`
+            //     );
+
+            //     res.json({ message: `File uploaded ==> https://gateway.irys.xyz/${resp.id}` });
+            // } catch (e: unknown) {
+            //     console.log(e);
+            //     res.json({ error: "something failed" });
+            // }
         });
     });
 
