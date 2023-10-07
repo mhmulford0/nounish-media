@@ -8,7 +8,8 @@
     "start": "tsc && node ./dist/main.js",
     "dev": "tsx watch src/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "fund": "tsx src/scripts/fund.ts"
+    "fund": "tsx src/scripts/fund.ts",
+    "getBalance": "tsx src/scripts/getBalance.ts"
   },
   "keywords": [],
   "author": "mulf",
