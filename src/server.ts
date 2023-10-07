@@ -1,11 +1,7 @@
 import "dotenv/config";
-import express, {
-  type NextFunction,
-  type Request,
-  type Response,
-} from "express";
+import express from "express";
 import Irys from "@irys/sdk";
-import multer, { MulterError } from "multer";
+import multer from "multer";
 
 const FILE_SIZE_LIMIT = 5_000_000;
 const { PRIVATE_KEY, RPC_URL } = process.env;
@@ -42,23 +38,6 @@ const upload = multer({
   },
 });
 
-function handleUploadError() {
-  return (err: Error, _req: Request, res: Response, next: NextFunction) => {
-    console.log("caught error");
-    if (err instanceof MulterError) {
-      console.log("YEET");
-      // A Multer error occurred when uploading.
-      res.status(400).json({ error: err.message });
-    } else if (err) {
-      // An unknown error occurred when uploading.
-      res.status(500).json({ error: err.message });
-    } else {
-      // Everything went fine.
-      next();
-    }
-  };
-}
-
 async function getIrys() {
   const irys = new Irys({
     url: "https://devnet.irys.xyz",
@@ -72,7 +51,6 @@ async function getIrys() {
 export function createServer() {
   const app = express();
   app.use(express.static(new URL("./public", import.meta.url).pathname));
-  app.use(handleUploadError());
 
   const uploadMedia = upload.single("prop-media");
 
@@ -81,6 +59,8 @@ export function createServer() {
   });
 
   app.post("/upload", (req, res) => {
+    // TODO: check prop admin
+
     uploadMedia(req, res, (err) => {
       if (err) {
         return res.json(err);
