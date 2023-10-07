@@ -6,8 +6,9 @@
   </head>
   <script src="https://cdn.tailwindcss.com"></script>
   </style>
+  
   <body class="bg-zinc-800">
-    <form class="max-w-xl mx-auto" action="/upload" method="post" enctype="multipart/form-data">
+    <form class="max-w-xl mx-auto" id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
       <div class="space-y-12">
         <div class="pb-12">
           
@@ -25,7 +26,7 @@
                   <div class="mt-4 flex text-sm leading-6 text-gray-400">
                     <label for="file-upload" class="relative cursor-pointer rounded-md bg-gray-900 font-semibold text-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 hover:text-indigo-500">
                       <span>Upload a file</span>
-                      <input id="file-upload" name="file-upload" type="file" class="sr-only">
+                      <input id="file-upload" name="prop-media" type="file" class="sr-only">
                     </label>
                     <p class="pl-1">or drag and drop</p>
                   </div>
@@ -36,7 +37,28 @@
           </div>
         </div>
       </div>
-    
+      <div class="mt-6 flex items-center justify-end gap-x-6">
+        <button type="submit" class="rounded-md bg-slate-500 px-3 py-2 text-sm font-semibold text-white shadow-sm ">Upload</button>
+      </div>
     </form>
   </body>
+  <script type="text/javascript">
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();  // Prevents the default form submission behavior
+
+        // Your custom form handling code
+        var formData = new FormData(this);
+        fetch('/upload', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
 </html>

@@ -1,12 +1,14 @@
 import "dotenv/config";
 import express from "express";
 import Irys from "@irys/sdk";
+import multer from "multer";
 
 const { PRIVATE_KEY, RPC_URL } = process.env;
-
 if (!PRIVATE_KEY || !RPC_URL) {
   throw new Error("PRIVATE_KEY and RPC_URL env var required");
 }
+
+const upload = multer({ dest: "../tmp" });
 
 async function getIrys() {
   const irys = new Irys({
@@ -18,6 +20,8 @@ async function getIrys() {
   return irys;
 }
 
+const FILE_SIZE_LIMIT = 5_000_000;
+
 export function createServer() {
   const app = express();
   app.use(express.static(new URL("./public", import.meta.url).pathname));
@@ -26,8 +30,23 @@ export function createServer() {
     res.json({ message: "hello" });
   });
 
-  app.post("/upload", () => {
-    throw Error("TODO");
+  app.post("/upload", upload.single("prop-media"), (req, res) => {
+    const validMimeTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "video/mp4",
+    ];
+
+    if (!req.file || !validMimeTypes.includes(req.file.mimetype)) {
+      return res.status(400).json({ error: "Invalid file type." });
+    }
+
+    if (req.file.size > FILE_SIZE_LIMIT) {
+      return res.status(400).json({ error: "File must be 5mb or less" });
+    }
+
+    res.json({ message: "file receieved" }).status(200);
   });
 
   return app;
