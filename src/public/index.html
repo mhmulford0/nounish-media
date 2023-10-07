@@ -8,6 +8,14 @@
 
     <body class="bg-zinc-800">
         <img id="uploaded-img" src="" class="max-w-md mx-auto mt-8 rounded-md shadow-xl" />
+
+        <video
+            id="uploaded-video"
+            class="max-w-md mx-auto mt-8 rounded-md shadow-xl hidden max-h-[480px]"
+        >
+            <source src="" type="video/mp4" />
+        </video>
+
         <form
             class="max-w-xl mx-auto"
             id="uploadForm"
@@ -59,8 +67,25 @@
     </body>
     <script type="text/javascript">
         const img = document.getElementById("uploaded-img");
-        // const placeholderImg = document.getElementById("placeholder-img");
         const form = document.getElementById("uploadForm");
+        const videoElement = document.getElementById("uploaded-video");
+
+        form.addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            videoElement.classList.add("hidden");
+            videoElement.src = "";
+            img.src = "";
+            if (file) {
+                const objectURL = URL.createObjectURL(file);
+                if (file.type.startsWith("image")) {
+                    document.getElementById("uploaded-img").src = objectURL;
+                } else if (file.type.startsWith("video")) {
+                    videoElement.src = objectURL;
+                    videoElement.controls = false;
+                    videoElement.classList.remove("hidden");
+                }
+            }
+        });
 
         form.addEventListener("submit", function (e) {
             e.preventDefault();
@@ -72,7 +97,9 @@
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data);
-                    img.setAttribute("src", data.fileURI);
+                    if (data.fileURI) {
+                        img.setAttribute("src", data.fileURI);
+                    }
                 })
                 .catch((error) => {
                     console.error("Error:", error);
