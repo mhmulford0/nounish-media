@@ -1,4 +1,5 @@
 import express from "express";
+import { createReadStream } from "node:fs";
 
 import { arweave, uploadPropMedia } from "./core.js";
 
@@ -7,7 +8,7 @@ export function createServer() {
     app.use(express.static(new URL("./public", import.meta.url).pathname));
 
     app.get("/", (_, res) => {
-        res.json({ message: "running" });
+        res.sendFile(new URL("./public", import.meta.url).pathname);
     });
 
     app.post("/upload", (req, res) => {
@@ -23,9 +24,16 @@ export function createServer() {
             }
 
             console.log(`${req.file.destination}${req.file.filename}`);
-            console.log(arweave.utils.toAtomic(1) * 0.2);
 
-            return res.json({ message: "ship it" });
+            const uploader = arweave.uploader.chunkedUploader; // recreate for each transaction
+            const dataStream = createReadStream(`${req.file.destination}${req.file.filename}`);
+            const response = await uploader.uploadData(dataStream);
+            console.log(`Read Stream uploaded ==> https://gateway.irys.xyz/${response.data.id}`);
+
+            return res.json({
+                message: "file uploaded",
+                fileURI: `https://gateway.irys.xyz/${response.data.id}`,
+            });
 
             // try {
             //     const resp = await arweave.uploadFile(
