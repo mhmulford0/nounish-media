@@ -7,13 +7,13 @@ const { PRIVATE_KEY, RPC_URL } = process.env;
 if (!PRIVATE_KEY || !RPC_URL) {
   throw new Error("PRIVATE_KEY and RPC_URL env var required");
 }
-var storage = multer.diskStorage({
+const storage = multer.diskStorage({
   destination: "uploads/",
   filename: function (_req, file, callback) {
     callback(null, Date.now().toString() + file.originalname);
   },
 });
-var upload = multer({ storage: storage });
+const upload = multer({ storage: storage });
 
 async function getIrys() {
   const irys = new Irys({
