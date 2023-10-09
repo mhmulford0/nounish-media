@@ -6,19 +6,22 @@ import App from "./App.tsx";
 import "./index.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+  darkTheme,
+  getDefaultWallets,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { mainnet, sepolia } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
 
-if (!process.env.VITE_ALCHEMY_ID) {
+if (!import.meta.env.VITE_ALCHEMY_ID) {
   throw new Error("alchemy api key required");
 }
 
 const { chains, publicClient } = configureChains(
-  [mainnet],
-  [alchemyProvider({ apiKey: process.env.VITE_ALCHEMY_ID }), publicProvider()]
+  [mainnet, sepolia],
+  [alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID })]
 );
 
 const { connectors } = getDefaultWallets({
@@ -36,7 +39,7 @@ const wagmiConfig = createConfig({
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
+      <RainbowKitProvider chains={chains} theme={darkTheme()}>
         <App />
       </RainbowKitProvider>
     </WagmiConfig>

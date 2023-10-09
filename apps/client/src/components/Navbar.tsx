@@ -1,3 +1,5 @@
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+
 export function Navbar() {
   return (
     <div className="drawer">
@@ -25,7 +27,17 @@ export function Navbar() {
               </svg>
             </label>
           </div>
-          <span>Nounish Media</span>
+
+          <div className="flex justify-between w-full">
+            <span className="text-base font-semibold text-lg">
+              Nounish Media
+            </span>
+            <ConnectButton
+              chainStatus="name"
+              showBalance={false}
+              accountStatus="address"
+            />
+          </div>
         </div>
       </div>
       <div className="drawer-side">
