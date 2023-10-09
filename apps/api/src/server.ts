@@ -7,7 +7,7 @@ export function createServer() {
     const app = express();
 
     app.get("/", (_, res) => {
-        res.sendFile(new URL("./public", import.meta.url).pathname);
+        return res.json({ message: "running" });
     });
 
     app.post("/upload", (req, res) => {
