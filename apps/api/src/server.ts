@@ -5,7 +5,6 @@ import { arweave, uploadPropMedia } from "./core.js";
 
 export function createServer() {
     const app = express();
-    app.use(express.static(new URL("./public", import.meta.url).pathname));
 
     app.get("/", (_, res) => {
         res.sendFile(new URL("./public", import.meta.url).pathname);
