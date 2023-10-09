@@ -1,5 +1,6 @@
 import express from "express";
 import { createReadStream } from "node:fs";
+import { generateNonce, SiweMessage } from "siwe";
 
 import { arweave, uploadPropMedia } from "./core.js";
 
@@ -8,6 +9,10 @@ export function createServer() {
 
     app.get("/", (_, res) => {
         return res.json({ message: "running" });
+    });
+
+    app.get("/nonce", (_, res) => {
+        res.send(generateNonce());
     });
 
     app.post("/upload", (req, res) => {
