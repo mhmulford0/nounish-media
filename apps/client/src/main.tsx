@@ -12,7 +12,7 @@ import {
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
+import { mainnet } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 
 if (!import.meta.env.VITE_ALCHEMY_ID) {
@@ -20,7 +20,7 @@ if (!import.meta.env.VITE_ALCHEMY_ID) {
 }
 
 const { chains, publicClient } = configureChains(
-  [mainnet, sepolia],
+  [mainnet],
   [alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID })]
 );
 

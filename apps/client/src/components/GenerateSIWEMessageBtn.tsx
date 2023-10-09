@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { SiweMessage } from "siwe";
 import { useAccount, useSignMessage } from "wagmi";
 
-export default function GenerateMessageBtn() {
+type Props = {
+  setIsVerified: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function GenerateMessageBtn({ setIsVerified }: Props) {
   const { signMessageAsync } = useSignMessage();
   const { address } = useAccount();
   const [domain, setDomain] = useState("");
@@ -17,7 +21,6 @@ export default function GenerateMessageBtn() {
     <>
       <button
         className="btn btn-accent"
-        type="submit"
         onClick={async () => {
           if (!address) return;
           const res = await fetch(`http://localhost:3001/nonce`);
@@ -49,12 +52,17 @@ export default function GenerateMessageBtn() {
             if (!res.ok) {
               console.log("failed");
             }
+
+            if (res.ok) {
+              setIsVerified(true);
+              console.log("ok");
+            }
           } catch (e: unknown) {
             console.log(e);
           }
         }}
       >
-        Upload
+        Verify
       </button>
     </>
   );

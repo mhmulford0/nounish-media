@@ -3,9 +3,16 @@ import GenerateMessageBtn from "./GenerateSIWEMessageBtn";
 type Props = {
   isVideo: boolean;
   fileURL: string;
+  isVerified: boolean;
+  setIsVerified: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export function MediaPreview({ fileURL, isVideo }: Props) {
+export function MediaPreview({
+  fileURL,
+  isVideo,
+  setIsVerified,
+  isVerified,
+}: Props) {
   return (
     <section className="text-center">
       {fileURL && isVideo && (
@@ -30,7 +37,9 @@ export function MediaPreview({ fileURL, isVideo }: Props) {
           />
         </>
       )}
-      {fileURL && <GenerateMessageBtn />}
+      {fileURL && !isVerified && (
+        <GenerateMessageBtn setIsVerified={setIsVerified} />
+      )}
     </section>
   );
 }
