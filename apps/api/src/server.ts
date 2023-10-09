@@ -1,8 +1,19 @@
-import express from "express";
+import express, { type Request, type Response } from "express";
 import { createReadStream } from "node:fs";
 import { generateNonce, SiweMessage } from "siwe";
 
 import { arweave, uploadPropMedia } from "./core.js";
+
+type Message = {
+    domain: string;
+    address: string;
+    statement: string;
+    uri: string;
+    version: string;
+    chainId: number;
+    nonce: string;
+    issuedAt: string;
+};
 
 export function createServer() {
     const app = express();
@@ -47,6 +58,26 @@ export function createServer() {
             }
         });
     });
+
+    app.post(
+        "/verify",
+        async (req: Request<{}, {}, { message?: Message; signature?: string }>, res) => {
+            const { message, signature } = req.body;
+
+            if (!message || !signature) {
+                return res.status(400).send();
+            }
+
+            console.log({ message }, { signature });
+            const siweMessage = new SiweMessage(message);
+            try {
+                await siweMessage.verify({ signature });
+                res.send(true);
+            } catch {
+                res.send(false);
+            }
+        }
+    );
 
     return app;
 }
