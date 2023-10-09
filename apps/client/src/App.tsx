@@ -1,35 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ChangeEvent, FormEvent, useState } from "react";
+import { Navbar } from "./components/Navbar";
+import { MediaPreview } from "./components/MediaPreview";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [fileURL, setFileURL] = useState("");
+  const [isVideo, setIsVideo] = useState(false);
+
+  const handleChange = ({
+    target: { files },
+  }: ChangeEvent<HTMLInputElement>) => {
+    if (!files) return;
+    const file = files[0];
+    const objectURL = URL.createObjectURL(file);
+    const isVideoFile = file.type.startsWith("video");
+    setIsVideo(isVideoFile);
+    setFileURL(objectURL);
+  };
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    try {
+      const response = await fetch("/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.fileURI) {
+        setFileURL(data.fileURI);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <Navbar />
+
+      <div className="container py-8 px-4 w-full">
+        <section className="flex items-center justify-center flex-col">
+          <h1>Nouns Media</h1>
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-wrap flex-col w-fit sm:w-96"
+          >
+            <input
+              onChange={handleChange}
+              type="file"
+              className="file-input file-input-bordered file-input-info w-full mb-1"
+            />
+            <p className="text-xs leading-5 text-gray-400">
+              PNG, JPG, GIF or MP4 up to 5MB
+            </p>
+
+            <MediaPreview isVideo={isVideo} fileURL={fileURL} />
+          </form>
+        </section>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
