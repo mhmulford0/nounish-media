@@ -1,6 +1,8 @@
 import { createServer } from "./server.js";
 
+const PORT = Number(process.env.PORT) || 3000;
+
 const app = createServer();
 
-console.log("server running on 3k");
-app.listen(Number(process.env.PORT) || 3000, "0.0.0.0");
+console.log("server running on ", PORT);
+app.listen(PORT, "0.0.0.0");
