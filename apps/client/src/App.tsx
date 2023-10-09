@@ -23,9 +23,8 @@ function App() {
 
     const formData = new FormData(event.currentTarget);
 
-    for (const pair of formData.entries()) {
-      console.log(pair[0] + ", " + pair[1]);
-    }
+    // add wallet to form data instead of json
+    formData.append("wallet", "0xSTRING");
 
     try {
       const response = await fetch("http://localhost:3001/upload", {
