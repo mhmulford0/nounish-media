@@ -29,10 +29,11 @@ export function Navbar() {
           </div>
 
           <div className="flex justify-between w-full">
-            <span className="text-base font-semibold text-lg">
+            <span className="text-base-content font-semibold text-lg">
               Nounish Media
             </span>
             <ConnectButton
+              label="Sign in"
               chainStatus="name"
               showBalance={false}
               accountStatus="address"

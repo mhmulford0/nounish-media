@@ -19,6 +19,9 @@ function App() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+
+    console.log(formData);
+    return;
     try {
       const response = await fetch("/upload", {
         method: "POST",
@@ -40,6 +43,7 @@ function App() {
       <div className="container py-8 px-4 w-full">
         <section className="flex items-center justify-center flex-col">
           <h1>Nouns Media</h1>
+
           <form
             onSubmit={handleSubmit}
             className="flex flex-wrap flex-col w-fit sm:w-96"

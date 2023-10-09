@@ -1,3 +1,5 @@
+import GenerateMessageBtn from "./GenerateSIWEMessageBtn";
+
 type Props = {
   isVideo: boolean;
   fileURL: string;
@@ -15,7 +17,6 @@ export function MediaPreview({ fileURL, isVideo }: Props) {
           >
             <source src={fileURL} type="video/mp4" />
           </video>
-          <button className="btn btn-accent w-fit">Upload</button>
         </>
       )}
 
@@ -27,9 +28,9 @@ export function MediaPreview({ fileURL, isVideo }: Props) {
             className="w-96 mx-auto mt-8 rounded-md shadow-xl"
             alt=""
           />
-          <button className="btn btn-accent w-fit">Upload</button>
         </>
       )}
+      {fileURL && <GenerateMessageBtn />}
     </section>
   );
 }

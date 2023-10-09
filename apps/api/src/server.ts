@@ -1,5 +1,6 @@
 import express, { type Request, type Response } from "express";
 import { createReadStream } from "node:fs";
+import cors from "cors";
 import { generateNonce, SiweMessage } from "siwe";
 
 import { arweave, uploadPropMedia } from "./core.js";
@@ -17,6 +18,9 @@ type Message = {
 
 export function createServer() {
     const app = express();
+
+    app.use(express.json());
+    app.use(cors());
 
     app.get("/", (_, res) => {
         return res.json({ message: "running" });
@@ -62,11 +66,12 @@ export function createServer() {
     app.post(
         "/verify",
         async (req: Request<{}, {}, { message?: Message; signature?: string }>, res) => {
-            const { message, signature } = req.body;
-
-            if (!message || !signature) {
+            console.log(req.body);
+            if (!req.body?.message || !req.body?.signature) {
                 return res.status(400).send();
             }
+
+            const { message, signature } = req.body;
 
             console.log({ message }, { signature });
             const siweMessage = new SiweMessage(message);
