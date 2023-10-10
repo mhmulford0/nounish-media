@@ -3,6 +3,7 @@ import { Navbar } from "./components/Navbar";
 import { MediaPreview } from "./components/MediaPreview";
 import { fetcher } from "./utils";
 import Alert from "./components/Alert";
+import { useAccount } from "wagmi";
 import { type AlertInfo } from "./types";
 import GenerateMessageBtn from "./components/GenerateSIWEMessageBtn";
 
@@ -17,6 +18,8 @@ function App() {
     fileURI: null,
   });
 
+  const { address } = useAccount();
+
   const handleChange = ({
     target: { files },
   }: ChangeEvent<HTMLInputElement>) => {
@@ -29,9 +32,11 @@ function App() {
   };
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!isVerified) return;
+    if (!isVerified || !address) return;
 
     const formData = new FormData(event.currentTarget);
+
+    formData.append("address", address);
 
     try {
       const response = await fetcher({
