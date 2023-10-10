@@ -1,12 +1,21 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Navbar } from "./components/Navbar";
 import { MediaPreview } from "./components/MediaPreview";
 import { fetcher } from "./utils";
+import Alert from "./components/Alert";
+import { type AlertInfo } from "./types";
+import GenerateMessageBtn from "./components/GenerateSIWEMessageBtn";
 
 function App() {
   const [fileURL, setFileURL] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isVideo, setIsVideo] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [alertInfo, setAlertInfo] = useState<AlertInfo>({
+    type: null,
+    message: null,
+    fileURI: null,
+  });
 
   const handleChange = ({
     target: { files },
@@ -24,18 +33,25 @@ function App() {
 
     const formData = new FormData(event.currentTarget);
 
-    // add wallet to form data instead of json
-    formData.append("wallet", "0xSTRING");
-
     try {
       const response = await fetcher({
         route: "/upload",
         method: "POST",
         body: formData,
       });
+
+      if (!response.ok) {
+        setAlertInfo({ type: "error", message: "could not upload" });
+      }
       const data = await response.json();
+
       if (data.fileURI) {
         setFileURL(data.fileURI);
+        setAlertInfo({
+          type: "success",
+          message: "File uploaded success",
+          fileURI: data.fileUri,
+        });
       }
     } catch (error) {
       console.error("Error:", error);
@@ -60,25 +76,43 @@ function App() {
               type="file"
               name="prop-media"
               className="file-input file-input-bordered file-input-info w-full mb-1"
+              ref={fileInputRef}
             />
             <p className="text-xs leading-5 text-gray-400">
               PNG, JPG, GIF or MP4 up to 5MB
             </p>
 
-            <MediaPreview
-              isVideo={isVideo}
-              fileURL={fileURL}
-              isVerified={isVerified}
-              setIsVerified={setIsVerified}
-            />
+            <MediaPreview isVideo={isVideo} fileURL={fileURL} />
             {isVerified && (
-              <button type="submit" className="btn btn-warning">
+              <button type="submit" className="btn btn-primary">
                 Upload
               </button>
             )}
           </form>
+          {fileURL && !isVerified && (
+            <GenerateMessageBtn setIsVerified={setIsVerified} />
+          )}
+
+          {fileURL && (
+            <button
+              onClick={() => {
+                if (!fileInputRef.current) return;
+                setFileURL("");
+                fileInputRef.current.value = "";
+              }}
+              className="btn btn-error w-96 mt-3"
+            >
+              Clear
+            </button>
+          )}
         </section>
       </div>
+
+      <Alert
+        message={alertInfo.message}
+        type={alertInfo.type}
+        fileURI={fileURL}
+      />
     </>
   );
 }

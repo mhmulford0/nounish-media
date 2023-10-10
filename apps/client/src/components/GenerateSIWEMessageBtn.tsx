@@ -21,7 +21,7 @@ export default function GenerateMessageBtn({ setIsVerified }: Props) {
   return (
     <>
       <button
-        className="btn btn-accent"
+        className="btn btn-accent w-96"
         onClick={async () => {
           if (!address) return;
           const res = await fetcher({ route: "/nonce" });
