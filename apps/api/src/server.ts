@@ -1,13 +1,14 @@
+import cors from "cors";
 import express, { type Request, type Response } from "express";
 import { createReadStream } from "node:fs";
-import cors from "cors";
 import { generateNonce, SiweMessage } from "siwe";
+import { erc721ABI } from "@wagmi/core";
 
-import { arweave, uploadPropMedia } from "./core.js";
+import { arweave, client, uploadPropMedia } from "./core.js";
 
 type Message = {
     domain: string;
-    address: string;
+    address: `0x${string}`;
     statement: string;
     uri: string;
     version: string;
@@ -30,9 +31,7 @@ export function createServer() {
         res.send(generateNonce());
     });
 
-    app.post("/upload", (req, res) => {
-        // TODO: check prop admin
-
+    app.post("/upload", async (req, res) => {
         uploadPropMedia(req, res, async (err) => {
             if (!req.file) {
                 return res.json({ error: "No file detected" });
@@ -72,6 +71,61 @@ export function createServer() {
             }
 
             const { message, signature } = req.body;
+
+            // check ownership of a predefined NFT
+
+            const gnarsContract = {
+                address: "0x558BFFF0D583416f7C4e380625c7865821b8E95C",
+                abi: erc721ABI,
+            } as const;
+
+            const builderDAOContract = {
+                address: "0xdf9B7D26c8Fc806b1Ae6273684556761FF02d422",
+                abi: erc721ABI,
+            } as const;
+
+            const lilNounsContract = {
+                address: "0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B",
+                abi: erc721ABI,
+            } as const;
+
+            const nounsContract = {
+                address: "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
+                abi: erc721ABI,
+            } as const;
+
+            const results = await client.multicall({
+                contracts: [
+                    {
+                        ...gnarsContract,
+                        functionName: "balanceOf",
+                        args: [message.address],
+                    },
+                    {
+                        ...builderDAOContract,
+                        functionName: "balanceOf",
+                        args: [message.address],
+                    },
+                    {
+                        ...lilNounsContract,
+                        functionName: "balanceOf",
+                        args: [message.address],
+                    },
+                    {
+                        ...nounsContract,
+                        functionName: "balanceOf",
+                        args: [message.address],
+                    },
+                ],
+            });
+
+            const isHolder = results.some((nft) => Number(nft.result) > 0);
+
+            console.log({ isHolder });
+
+            if (!isHolder) {
+                return res.json({ error: "must be a holder of an approved collection" });
+            }
 
             console.log({ message }, { signature });
             const siweMessage = new SiweMessage(message);
