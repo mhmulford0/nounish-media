@@ -1,35 +1,28 @@
-# ts-starter
+# API Routes Documentation
 
-Version: 1.0.0
+## `GET /`
 
-Author: mulf
+-   **Description:** A route to check if the server is running.
+-   **Input:** None
+-   **Output:** A JSON message indicating the server is running.
 
-## Description
-
-This package serves as a TypeScript starter kit. It includes strict type checking and a reasonably recent compilation target (es2020). It is intended to be used with Node.js at LTS version 18.x.
-
-## Installation
-
-To get started, you need to install the required dependencies:
-
-```bash
-npm install
+```json
+{
+    "message": "running"
+}
 ```
 
-## Scripts
+## `GET /nonce`
 
-- **build**: Compile the TypeScript files to JavaScript using `tsc`.
-- **start**: Build and then run the application.
-- **dev**: Watch for changes in your TypeScript files and rebuild using `tsx watch ./src/main.ts`.
+-   **Description:** Generates a nonce for SIWE (Sign In With Ethereum) authentication.
+-   **Input:** None
+-   **Output:** A nonce string.
 
-## Dependencies
+## `POST /upload`
 
-### Development
-
-- TypeScript: `^5.1.6`
-- tsx: `^3.12.7`
-- @types/node: `18.17`
-
-## License
-
-This project is licensed under the MIT license.
+-   **Description:** Uploads a media file to the server and Arweave network.
+-   **Input:** A multipart/form-data POST request containing the media file.
+-   **File Constraints**
+    -   **_File Size: Up to 5MB_**
+        Accepted File Types: `jpg, png, gif, mp4.`
+-   **Output** Success: A JSON object containing a success message and a URI to the uploaded file.
