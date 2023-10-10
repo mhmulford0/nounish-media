@@ -64,7 +64,7 @@ function App() {
 
       <div className="container py-8 px-4 w-full">
         <section className="flex items-center justify-center flex-col">
-          <h1>Media Uploader</h1>
+          <h1 className="pt-12">Media Uploader</h1>
 
           <form
             onSubmit={handleSubmit}
@@ -100,7 +100,7 @@ function App() {
                 setFileURL("");
                 fileInputRef.current.value = "";
               }}
-              className="btn btn-error w-96 mt-3"
+              className="btn btn-error w-96 mt-4"
             >
               Clear
             </button>
