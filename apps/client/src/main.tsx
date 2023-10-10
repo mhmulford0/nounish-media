@@ -19,6 +19,10 @@ if (!import.meta.env.VITE_ALCHEMY_ID) {
   throw new Error("alchemy api key required");
 }
 
+if (!import.meta.env.VITE_API_URL) {
+  throw new Error("API URL required");
+}
+
 const { chains, publicClient } = configureChains(
   [mainnet],
   [alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_ID })]

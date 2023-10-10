@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { SiweMessage } from "siwe";
 import { useAccount, useSignMessage } from "wagmi";
+import { fetcher } from "../utils";
 
 type Props = {
   setIsVerified: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,7 +24,7 @@ export default function GenerateMessageBtn({ setIsVerified }: Props) {
         className="btn btn-accent"
         onClick={async () => {
           if (!address) return;
-          const res = await fetch(`http://localhost:3001/nonce`);
+          const res = await fetcher({ route: "/nonce" });
           const nonce = await res.text();
           try {
             const message = new SiweMessage({
@@ -41,7 +42,8 @@ export default function GenerateMessageBtn({ setIsVerified }: Props) {
 
             console.log(message, signature);
 
-            const res = await fetch("http://localhost:3001/verify", {
+            const res = await fetcher({
+              route: "/verify",
               method: "POST",
               headers: {
                 "Content-Type": "application/json",

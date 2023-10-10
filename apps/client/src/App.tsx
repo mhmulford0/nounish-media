@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Navbar } from "./components/Navbar";
 import { MediaPreview } from "./components/MediaPreview";
+import { fetcher } from "./utils";
 
 function App() {
   const [fileURL, setFileURL] = useState("");
@@ -27,7 +28,8 @@ function App() {
     formData.append("wallet", "0xSTRING");
 
     try {
-      const response = await fetch("http://localhost:3001/upload", {
+      const response = await fetcher({
+        route: "/upload",
         method: "POST",
         body: formData,
       });
@@ -46,7 +48,7 @@ function App() {
 
       <div className="container py-8 px-4 w-full">
         <section className="flex items-center justify-center flex-col">
-          <h1>Nouns Media</h1>
+          <h1>Media Uploader</h1>
 
           <form
             onSubmit={handleSubmit}
