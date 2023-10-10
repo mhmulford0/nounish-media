@@ -31,62 +31,61 @@ export function createServer() {
         res.send(generateNonce());
     });
 
-    app.post("/upload", async (req: Request<{}, {}, { address: `0x${string}` }>, res) => {
-        uploadPropMedia(req, res, async (err) => {
-            if (!req.file) {
-                return res.status(400).json({ error: "No file detected" });
-            }
-
-            if (!req.body.address) {
-                return res.status(400).json({ error: "Address is required" });
-            }
-
-            if (err) {
-                return res.json(err);
-            }
-
-            const isHolder = checkNFTOwnership(req.body.address);
-
-            if (!isHolder) {
-                res.status(400).json({ error: "Must be a holder of an allowed collection" });
-            }
-
-            console.log(`${req.file.destination}${req.file.filename}`);
-
-            try {
-                const uploader = arweave.uploader.chunkedUploader;
-                const dataStream = createReadStream(`${req.file.destination}${req.file.filename}`);
-                const response = await uploader.uploadData(dataStream);
-                console.log(
-                    `Read Stream uploaded ==> https://gateway.irys.xyz/${response.data.id}`
-                );
-
-                return res.json({
-                    message: "file uploaded",
-                    fileURI: `https://gateway.irys.xyz/${response.data.id}`,
-                });
-            } catch (e) {
-                console.log(e);
-                return res.status(500).json({ error: "generic error" });
-            }
-        });
-    });
-
     app.post(
-        "/verify",
-        async (req: Request<{}, {}, { message?: Message; signature?: string }>, res) => {
-            if (!req.body?.message || !req.body?.signature) {
-                return res.status(400).json({ error: "signed messaged and signature required" });
-            }
-
-            const { message, signature } = req.body;
-
-            const siweMessage = new SiweMessage(message);
+        "/upload",
+        async (req: Request<{}, {}, { message?: string; signature?: string }>, res) => {
             try {
-                await siweMessage.verify({ signature });
-                res.send(true);
+                uploadPropMedia(req, res, async (err) => {
+                    console.log({ ...req.body });
+                    if (!req.body?.message || !req.body?.signature) {
+                        return res
+                            .status(400)
+                            .json({ error: "signed messaged and signature required" });
+                    }
+
+                    const { message, signature } = req.body;
+
+                    const siweMessage = new SiweMessage(JSON.parse(message));
+                    const verified = await siweMessage.verify({ signature });
+                    if (!req.file) {
+                        return res.status(400).json({ error: "No file detected" });
+                    }
+
+                    if (err) {
+                        return res.json(err);
+                    }
+
+                    const isHolder = checkNFTOwnership(verified.data.address as `0x${string}`);
+
+                    if (!isHolder) {
+                        res.status(400).json({
+                            error: "Must be a holder of an allowed collection",
+                        });
+                    }
+
+                    console.log(`${req.file.destination}${req.file.filename}`);
+
+                    try {
+                        const uploader = arweave.uploader.chunkedUploader;
+                        const dataStream = createReadStream(
+                            `${req.file.destination}${req.file.filename}`
+                        );
+                        const response = await uploader.uploadData(dataStream);
+                        console.log(
+                            `Read Stream uploaded ==> https://gateway.irys.xyz/${response.data.id}`
+                        );
+
+                        return res.json({
+                            message: "file uploaded",
+                            fileURI: `https://gateway.irys.xyz/${response.data.id}`,
+                        });
+                    } catch (e) {
+                        console.log(e);
+                        return res.status(500).json({ error: "generic error" });
+                    }
+                });
             } catch {
-                res.send(false);
+                res.status(500).json({ error: "Could not verify wallet address" });
             }
         }
     );

@@ -6,6 +6,7 @@ import Alert from "./components/Alert";
 import { useAccount } from "wagmi";
 import { type AlertInfo } from "./types";
 import GenerateMessageBtn from "./components/GenerateSIWEMessageBtn";
+import { type SiweMessage } from "siwe";
 
 function App() {
   const [fileURL, setFileURL] = useState("");
@@ -16,6 +17,13 @@ function App() {
     type: null,
     message: null,
     fileURI: null,
+  });
+  const [walletMessage, setWalletMessage] = useState<{
+    message: null | SiweMessage;
+    signature: string;
+  }>({
+    message: null,
+    signature: "",
   });
 
   const { address } = useAccount();
@@ -32,11 +40,12 @@ function App() {
   };
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!isVerified || !address) return;
+    if (!isVerified || !address || !walletMessage.message) return;
 
     const formData = new FormData(event.currentTarget);
 
-    formData.append("address", address);
+    formData.append("message", JSON.stringify(walletMessage.message));
+    formData.append("signature", walletMessage.signature);
 
     try {
       const response = await fetcher({
@@ -95,7 +104,10 @@ function App() {
             )}
           </form>
           {fileURL && !isVerified && (
-            <GenerateMessageBtn setIsVerified={setIsVerified} />
+            <GenerateMessageBtn
+              setIsVerified={setIsVerified}
+              setWalletMessage={setWalletMessage}
+            />
           )}
 
           {fileURL && (
