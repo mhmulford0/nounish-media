@@ -52,13 +52,17 @@ export default function Alert({ type, message, fileURI }: AlertInfo) {
             </svg>
 
             <section>
-              Upload Sucessful, view it{" "}
-              <a
-                className="link link-neutral text-black no-underline hover:underline"
-                href={fileURI}
-              >
-                here
-              </a>
+              {fileURI && (
+                <>
+                  Upload Sucessful, view it{" "}
+                  <a
+                    className="link link-neutral text-black no-underline hover:underline"
+                    href={fileURI}
+                  >
+                    here
+                  </a>
+                </>
+              )}
             </section>
           </div>
         );
