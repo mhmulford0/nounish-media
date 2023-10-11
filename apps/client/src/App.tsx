@@ -53,11 +53,13 @@ function App() {
         method: "POST",
         body: formData,
       });
+      const data = await response.json();
+
+      console.log(data.error);
 
       if (!response.ok) {
-        setAlertInfo({ type: "error", message: "could not upload" });
+        setAlertInfo({ type: "error", message: data.error });
       }
-      const data = await response.json();
 
       if (data.fileURI) {
         setFileURL(data.fileURI);

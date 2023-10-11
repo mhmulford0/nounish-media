@@ -1,5 +1,27 @@
 import { erc721ABI } from "@wagmi/core";
-import { client } from "./core.js";
+import { client, uploadPropMedia } from "./core.js";
+import type { NextFunction, Request, Response } from "express";
+
+export const uploadMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    uploadPropMedia(req, res, (err) => {
+        if (err) {
+            return res.status(400).json({ error: err.message });
+        }
+        next();
+    });
+};
+
+export const validateRequestBody = async (
+    req: Request<{}, {}, { message?: string; signature?: string }>,
+    res: Response,
+    next: NextFunction
+) => {
+    const { message, signature } = req.body;
+    if (!message || !signature) {
+        return res.status(400).json({ error: "signed messaged and signature required" });
+    }
+    next();
+};
 
 export async function checkNFTOwnership(address: `0x${string}`) {
     if (!address) {

@@ -21,7 +21,7 @@
 ## `POST /upload`
 
 -   **Description:** Uploads a media file to the server and Arweave network.
--   **Input:** A multipart/form-data POST request containing the media file.
+-   **Input:** A multipart/form-data POST request containing the media file, a signed SIWE message, and the signature.
 -   **File Constraints**
     -   **_File Size: Up to 5MB_**
         Accepted File Types: `jpg, png, gif, mp4.`
