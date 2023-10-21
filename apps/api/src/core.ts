@@ -70,6 +70,15 @@ export const db = createClient({
     authToken: DB_TOKEN,
 });
 
+function formatDate() {
+    const date = new Date();
+    const year = date.getFullYear().toString().slice(-2);
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${month}/${day}/${year}`;
+}
+
 export async function handleFileUpload(req: Request, res: Response) {
     try {
         const { message, signature } = req.body;
@@ -91,11 +100,12 @@ export async function handleFileUpload(req: Request, res: Response) {
         const response = await uploader.uploadData(dataStream);
 
         const rs = await db.execute({
-            sql: "INSERT INTO uploads VALUES (:id, :uri, :wallet)",
+            sql: "INSERT INTO uploads VALUES (:id, :uri, :wallet, :date)",
             args: {
                 id: nanoid(),
                 uri: response.data.id,
                 wallet: verified.data.address,
+                date: formatDate(),
             },
         });
         console.log(rs.rowsAffected);
@@ -103,7 +113,8 @@ export async function handleFileUpload(req: Request, res: Response) {
             message: "file uploaded",
             fileURI: `https://gateway.irys.xyz/${response.data.id}`,
         });
-    } catch {
+    } catch (e: unknown) {
+        console.log(e);
         return res.status(500).json({ error: "server error" });
     }
 }

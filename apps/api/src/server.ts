@@ -21,6 +21,32 @@ export function createServer() {
         res.send(generateNonce());
     });
 
+    app.post("/uploads", async (req, res) => {
+        console.log(req.body);
+        if (!req.body.wallet && typeof req.body.wallet != "string") {
+            return res.status(401).json({ error: "wallet is required" });
+        }
+
+        try {
+            const data = await db.execute({
+                sql: "SELECT id,uri,date FROM uploads WHERE wallet = :wallet",
+                args: {
+                    wallet: req.body.wallet,
+                },
+            });
+
+            console.log("here");
+
+            data.rows.map((item) => console.log(item));
+
+            setTimeout(() => {
+                return res.status(200).json(data.rows);
+            }, 5000);
+        } catch {
+            return res.status(500).json({ error: "server error" });
+        }
+    });
+
     app.post("/upload", uploadMiddleware, validateRequestBody, async (req, res) => {
         try {
             await handleFileUpload(req, res);
@@ -31,25 +57,6 @@ export function createServer() {
                 fs.unlinkSync(req.file.path);
             }
         }
-    });
-
-    app.get("/uploads", async (req, res) => {
-        if (!req.body.wallet && typeof req.body.wallet != "string") {
-            return res.status(401).json({ error: "wallet is required" });
-        }
-
-        const data = await db.execute({
-            sql: "SELECT id,uri FROM uploads WHERE wallet = :wallet",
-            args: {
-                wallet: req.body.wallet,
-            },
-        });
-
-        console.log("here");
-
-        data.rows.map((item) => console.log(item));
-
-        return res.status(200).json({ data: data.rows });
     });
 
     return app;
