@@ -5,7 +5,6 @@ import { fetcher } from "../utils";
 import { useAccount } from "wagmi";
 import GenerateMessageBtn from "../components/GenerateSIWEMessageBtn";
 import { type SiweMessage } from "siwe";
-import Layout from "../components/Layout";
 
 export default function HomePage() {
   const [fileURL, setFileURL] = useState("");
@@ -73,7 +72,7 @@ export default function HomePage() {
   };
 
   return (
-    <Layout>
+    <>
       <h1 className="pt-12">Media Uploader</h1>
 
       <form
@@ -118,6 +117,6 @@ export default function HomePage() {
           Clear
         </button>
       )}
-    </Layout>
+    </>
   );
 }

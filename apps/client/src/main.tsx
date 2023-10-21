@@ -16,6 +16,7 @@ import { mainnet } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import HomePage from "./pages/homePage";
 import UploadsPage from "./pages/uploads";
+import Layout from "./components/Layout";
 
 if (!import.meta.env.VITE_ALCHEMY_ID) {
   throw new Error("alchemy api key required");
@@ -45,9 +46,20 @@ const wagmiConfig = createConfig({
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: (
+      <Layout>
+        <HomePage />
+      </Layout>
+    ),
   },
-  { path: "/uploads", element: <UploadsPage /> },
+  {
+    path: "/uploads",
+    element: (
+      <Layout>
+        <UploadsPage />
+      </Layout>
+    ),
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

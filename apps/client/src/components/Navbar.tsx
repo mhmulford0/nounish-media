@@ -8,7 +8,7 @@ export default function Navbar() {
     <div className="navbar bg-neutral text-neutral-content">
       <div className="navbar-start">
         <Link to="/">
-          <span className="normal-case text-xl px-2 hover:underline">
+          <span className="normal-case text-xl px-2 no-underline hover:underline">
             Nounish Media
           </span>
         </Link>
