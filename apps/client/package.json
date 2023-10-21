@@ -13,6 +13,8 @@
     "@rainbow-me/rainbowkit": "^1.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "react-router-dom": "^6.17.0",
     "siwe": "^2.1.4",
     "viem": "^1.16.0",
     "wagmi": "^1.4.3"

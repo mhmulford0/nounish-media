@@ -27,7 +27,7 @@ export function createServer() {
             res.status(500).json({ error: error });
         } finally {
             if (req.file && fs.existsSync(req.file.path)) {
-                fs.unlinkSync(req.file.path); // Ensure file is deleted if it exists
+                fs.unlinkSync(req.file.path);
             }
         }
     });
