@@ -6,7 +6,7 @@ type Upload = {
   id: string;
   uri: string;
   date: string;
-  mimeType: string;
+  mime_type: string;
 };
 
 export default function useGetUploads() {

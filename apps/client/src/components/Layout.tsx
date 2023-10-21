@@ -12,11 +12,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Toaster />
       <Navbar />
 
-      <div className="container py-8 px-4 w-full">
-        <section className="flex items-center justify-center flex-col">
-          {children}
-        </section>
-      </div>
+      <div className="container py-8 px-4 w-full">{children}</div>
     </>
   );
 };

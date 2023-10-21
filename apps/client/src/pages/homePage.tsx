@@ -72,7 +72,7 @@ export default function HomePage() {
   };
 
   return (
-    <>
+    <section className="flex items-center justify-center flex-col">
       <h1 className="pt-12">Media Uploader</h1>
 
       <form
@@ -117,6 +117,6 @@ export default function HomePage() {
           Clear
         </button>
       )}
-    </>
+    </section>
   );
 }

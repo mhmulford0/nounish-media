@@ -39,9 +39,7 @@ export function createServer() {
 
             data.rows.map((item) => console.log(item));
 
-            setTimeout(() => {
-                return res.status(200).json(data.rows);
-            }, 5000);
+            return res.status(200).json(data.rows);
         } catch {
             return res.status(500).json({ error: "server error" });
         }
