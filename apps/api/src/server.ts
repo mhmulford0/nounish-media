@@ -29,7 +29,7 @@ export function createServer() {
 
         try {
             const data = await db.execute({
-                sql: "SELECT id,uri,date FROM uploads WHERE wallet = :wallet",
+                sql: "SELECT id,uri,date,mime_type FROM uploads WHERE wallet = :wallet",
                 args: {
                     wallet: req.body.wallet,
                 },

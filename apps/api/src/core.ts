@@ -5,7 +5,6 @@ import { nanoid } from "nanoid";
 import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 import type { Request, Response } from "express";
-import { createReadStream } from "fs";
 import { SiweMessage } from "siwe";
 import { checkNFTOwnership } from "./middleware.js";
 import { createClient } from "@libsql/client";
@@ -89,29 +88,29 @@ export async function handleFileUpload(req: Request, res: Response) {
             return res.status(400).json({ error: "no file detected" });
         }
 
+        console.log(req.file.mimetype);
+
         const isHolder = await checkNFTOwnership(verified.data.address as `0x${string}`);
 
         if (!isHolder) {
             return res.status(401).json({ error: "Must be a holder of an allowed collection" });
         }
 
-        const uploader = arweave.uploader.chunkedUploader;
-        const dataStream = createReadStream(`${req.file.destination}${req.file.filename}`);
-        const response = await uploader.uploadData(dataStream);
+        const response = await arweave.upload(`${req.file.destination}${req.file.filename}`, {});
 
-        const rs = await db.execute({
-            sql: "INSERT INTO uploads VALUES (:id, :uri, :wallet, :date)",
+        await db.execute({
+            sql: "INSERT INTO uploads VALUES (:id, :uri, :wallet, :date, :mime_type)",
             args: {
                 id: nanoid(),
-                uri: response.data.id,
+                uri: response.id,
                 wallet: verified.data.address,
                 date: formatDate(),
+                mime_type: req.file.mimetype,
             },
         });
-        console.log(rs.rowsAffected);
         return res.json({
             message: "file uploaded",
-            fileURI: `https://gateway.irys.xyz/${response.data.id}`,
+            fileURI: `https://gateway.irys.xyz/${response.id}`,
         });
     } catch (e: unknown) {
         console.log(e);

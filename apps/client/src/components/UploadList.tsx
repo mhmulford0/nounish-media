@@ -6,29 +6,20 @@ export default function UploadList() {
   console.log(uploads, isLoading);
   return (
     <div>
-      <div className="overflow-x-auto">
-        <table className="table text-xl">
-          {/* head */}
-          <thead>
-            <tr>
-              <th className="text-base">Link</th>
-              <th className="text-base">Date Uploaded</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {uploads.map((item) => (
-                <>
-                  <td>
-                    <a href={`https://gateway.irys.xyz/${item.uri}`}>file</a>
-                  </td>
-                  <td>{item.date}</td>
-                </>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      {uploads.map((item) => (
+        <div className="card card-compact w-96 bg-base-100 shadow-xl">
+          <figure>
+            <img src={`https://gateway.irys.xyz/${item.uri}`} />
+          </figure>
+          <div className="card-body">
+            <h2 className="card-title">Shoes!</h2>
+            <p>If a dog chews shoes whose shoes does he choose?</p>
+            <div className="card-actions justify-end">
+              <button className="btn btn-primary">Buy Now</button>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
