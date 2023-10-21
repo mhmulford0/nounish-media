@@ -96,7 +96,10 @@ export async function handleFileUpload(req: Request, res: Response) {
             return res.status(401).json({ error: "Must be a holder of an allowed collection" });
         }
 
-        const response = await arweave.upload(`${req.file.destination}${req.file.filename}`, {});
+        const response = await arweave.uploadFile(
+            `${req.file.destination}${req.file.filename}`,
+            {}
+        );
 
         await db.execute({
             sql: "INSERT INTO uploads VALUES (:id, :uri, :wallet, :date, :mime_type)",
