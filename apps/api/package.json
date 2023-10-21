@@ -4,7 +4,7 @@
   "type": "module",
   "description": "",
   "scripts": {
-    "build": "tsc && cp src/public/index.html dist/public/index.html",
+    "build": "tsc",
     "start": "node ./dist/main.js",
     "dev": "tsx watch src/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1",

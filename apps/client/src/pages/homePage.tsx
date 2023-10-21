@@ -61,7 +61,7 @@ export default function HomePage() {
       }
 
       if (data.fileURI) {
-        toast.success("file uploaded, view it here");
+        toast.success("file uploaded, view it on uploads");
       }
 
       setFileURL("");
