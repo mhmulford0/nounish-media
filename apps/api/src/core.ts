@@ -1,17 +1,19 @@
 import "dotenv/config";
 import multer from "multer";
 import Irys from "@irys/sdk";
+import { nanoid } from "nanoid";
 import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 import type { Request, Response } from "express";
 import { createReadStream } from "fs";
 import { SiweMessage } from "siwe";
 import { checkNFTOwnership } from "./middleware.js";
+import { createClient } from "@libsql/client";
 
-const { PRIVATE_KEY, RPC_URL, MAIN_RPC_URL } = process.env;
+const { PRIVATE_KEY, RPC_URL, MAIN_RPC_URL, DB_TOKEN, DB_URL } = process.env;
 
-if (!PRIVATE_KEY || !RPC_URL || !MAIN_RPC_URL) {
-    throw new Error("PRIVATE_KEY and RPC_URL env var required");
+if (!PRIVATE_KEY || !RPC_URL || !MAIN_RPC_URL || !DB_TOKEN || !DB_URL) {
+    throw new Error("PRIVATE_KEY and RPC_URL and DB_TOKEN and DB_URL env var required");
 }
 
 // Local File Config
@@ -63,27 +65,45 @@ export const client = createPublicClient({
     transport: http(MAIN_RPC_URL),
 });
 
+export const db = createClient({
+    url: DB_URL,
+    authToken: DB_TOKEN,
+});
+
 export async function handleFileUpload(req: Request, res: Response) {
-    const { message, signature } = req.body;
-    const siweMessage = new SiweMessage(JSON.parse(message));
-    const verified = await siweMessage.verify({ signature });
+    try {
+        const { message, signature } = req.body;
+        const siweMessage = new SiweMessage(JSON.parse(message));
+        const verified = await siweMessage.verify({ signature });
 
-    if (!req.file) {
-        throw new Error("no file detected");
+        if (!req.file) {
+            return res.status(400).json({ error: "no file detected" });
+        }
+
+        const isHolder = await checkNFTOwnership(verified.data.address as `0x${string}`);
+
+        if (!isHolder) {
+            return res.status(401).json({ error: "Must be a holder of an allowed collection" });
+        }
+
+        const uploader = arweave.uploader.chunkedUploader;
+        const dataStream = createReadStream(`${req.file.destination}${req.file.filename}`);
+        const response = await uploader.uploadData(dataStream);
+
+        const rs = await db.execute({
+            sql: "INSERT INTO uploads VALUES (:id, :uri, :wallet)",
+            args: {
+                id: nanoid(),
+                uri: response.data.id,
+                wallet: verified.data.address,
+            },
+        });
+        console.log(rs.rowsAffected);
+        return res.json({
+            message: "file uploaded",
+            fileURI: `https://gateway.irys.xyz/${response.data.id}`,
+        });
+    } catch {
+        return res.status(500).json({ error: "server error" });
     }
-
-    const isHolder = await checkNFTOwnership(verified.data.address as `0x${string}`);
-
-    if (!isHolder) {
-        throw new Error("Must be a holder of an allowed collection");
-    }
-
-    const uploader = arweave.uploader.chunkedUploader;
-    const dataStream = createReadStream(`${req.file.destination}${req.file.filename}`);
-    const response = await uploader.uploadData(dataStream);
-
-    res.json({
-        message: "file uploaded",
-        fileURI: `https://gateway.irys.xyz/${response.data.id}`,
-    });
 }

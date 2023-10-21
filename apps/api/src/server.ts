@@ -1,9 +1,10 @@
 import cors from "cors";
 import express from "express";
 import { generateNonce } from "siwe";
+
 import fs from "node:fs";
 
-import { handleFileUpload } from "./core.js";
+import { db, handleFileUpload } from "./core.js";
 import { uploadMiddleware, validateRequestBody } from "./middleware.js";
 
 export function createServer() {
@@ -30,6 +31,25 @@ export function createServer() {
                 fs.unlinkSync(req.file.path);
             }
         }
+    });
+
+    app.get("/uploads", async (req, res) => {
+        if (!req.body.wallet && typeof req.body.wallet != "string") {
+            return res.status(401).json({ error: "wallet is required" });
+        }
+
+        const data = await db.execute({
+            sql: "SELECT id,uri FROM uploads WHERE wallet = :wallet",
+            args: {
+                wallet: req.body.wallet,
+            },
+        });
+
+        console.log("here");
+
+        data.rows.map((item) => console.log(item));
+
+        return res.status(200).json({ data: data.rows });
     });
 
     return app;
