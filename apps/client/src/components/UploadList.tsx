@@ -6,41 +6,25 @@ export default function UploadList() {
   console.log(uploads, isLoading);
   return (
     <div>
-      {uploads.map((item) => (
-        <p>{item.uri}</p>
-      ))}
       <div className="overflow-x-auto">
-        <table className="table">
+        <table className="table text-xl">
           {/* head */}
           <thead>
             <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Job</th>
-              <th>Favorite Color</th>
+              <th className="text-base">Link</th>
+              <th className="text-base">Date Uploaded</th>
             </tr>
           </thead>
           <tbody>
-            {/* row 1 */}
             <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
-              <td>Quality Control Specialist</td>
-              <td>Blue</td>
-            </tr>
-            {/* row 2 */}
-            <tr className="hover">
-              <th>2</th>
-              <td>Hart Hagerty</td>
-              <td>Desktop Support Technician</td>
-              <td>Purple</td>
-            </tr>
-            {/* row 3 */}
-            <tr>
-              <th>3</th>
-              <td>Brice Swyre</td>
-              <td>Tax Accountant</td>
-              <td>Red</td>
+              {uploads.map((item) => (
+                <>
+                  <td>
+                    <a href={`https://gateway.irys.xyz/${item.uri}`}>file</a>
+                  </td>
+                  <td>{item.date}</td>
+                </>
+              ))}
             </tr>
           </tbody>
         </table>

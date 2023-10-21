@@ -5,6 +5,7 @@ import { fetcher } from "../utils";
 type Upload = {
   id: string;
   uri: string;
+  date: string;
 };
 
 export default function useGetUploads() {
